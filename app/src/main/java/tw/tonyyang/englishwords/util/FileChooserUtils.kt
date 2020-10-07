@@ -1,6 +1,5 @@
 package tw.tonyyang.englishwords.util
 
-import android.app.Activity
 import android.content.Context
 import android.net.Uri
 import jxl.Workbook
@@ -11,6 +10,7 @@ import tw.tonyyang.englishwords.App
 import tw.tonyyang.englishwords.Logger
 import tw.tonyyang.englishwords.database.Word
 import java.io.ByteArrayOutputStream
+import java.lang.Exception
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -20,26 +20,18 @@ class FileChooserUtils private constructor() {
         private val TAG = FileChooserUtils::class.java.simpleName
         private const val TMP_FILE_NAME = "vocabulary.xls"
 
-        suspend fun importExcelDataToDb(activity: Activity?, fileUrl: String?) = coroutineScope {
+        suspend fun importExcelDataToDb(context: Context, fileUrl: String) = coroutineScope {
             Logger.d(TAG, "[importExcelDataToDb] start")
-            if (fileUrl == null) {
-                Logger.d(TAG, "fileUrl is null.")
-                return@coroutineScope
-            }
-            if (activity == null) {
-                Logger.d(TAG, "activity is null.")
-                return@coroutineScope
-            }
             withContext(Dispatchers.IO) {
                 val data = if (fileUrl.contains("content://") || fileUrl.contains("file:///")) {
-                    readFile(activity, fileUrl)
+                    readFile(context, fileUrl)
                 } else {
                     readFileFromInternet(fileUrl)
                 }
-                storeDataToTempFile(activity, data)
-                getWorkbookFromTempFile(activity)?.let { book ->
+                storeDataToTempFile(context, data)
+                getWorkbookFromTempFile(context)?.let { book ->
                     if (book.sheets.isEmpty()) {
-                        return@let
+                        throw Exception("sheets is empty")
                     }
                     val sheet = book.getSheet(0)
                     val rows = sheet.rows
@@ -60,11 +52,11 @@ class FileChooserUtils private constructor() {
             Logger.d(TAG, "[importExcelDataToDb] end")
         }
 
-        private fun readFile(activity: Activity, filePath: String): ByteArray {
+        private fun readFile(context: Context, filePath: String): ByteArray {
             Logger.d(TAG, "[readFile] start")
             val arrayOutputStream = ByteArrayOutputStream()
             val uri = Uri.parse(filePath)
-            activity.contentResolver.openInputStream(uri)?.use {
+            context.contentResolver?.openInputStream(uri)?.use {
                 val buffer = ByteArray(10 * 1024)
                 while (true) {
                     val len = it.read(buffer)
@@ -103,14 +95,14 @@ class FileChooserUtils private constructor() {
             return arrayOutputStream.toByteArray()
         }
 
-        private fun storeDataToTempFile(activity: Activity, data: ByteArray) {
-            activity.openFileOutput(TMP_FILE_NAME, Context.MODE_PRIVATE)?.use {
+        private fun storeDataToTempFile(context: Context, data: ByteArray) {
+            context.openFileOutput(TMP_FILE_NAME, Context.MODE_PRIVATE)?.use {
                 it.write(data)
             }
         }
 
-        private fun getWorkbookFromTempFile(activity: Activity): Workbook? {
-            activity.openFileInput(TMP_FILE_NAME).use {
+        private fun getWorkbookFromTempFile(context: Context): Workbook? {
+            context.openFileInput(TMP_FILE_NAME).use {
                 return Workbook.getWorkbook(it)
             }
         }

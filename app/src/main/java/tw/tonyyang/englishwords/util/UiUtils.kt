@@ -13,7 +13,7 @@ import androidx.core.content.ContextCompat
 class UiUtils {
 
     companion object {
-        fun getProgressDialog(context: Context?, message: String?): AlertDialog? {
+        fun getProgressDialog(context: Context, message: String): AlertDialog {
             val llPadding = 30
             val ll = LinearLayout(context).apply {
                 orientation = LinearLayout.HORIZONTAL
@@ -39,20 +39,20 @@ class UiUtils {
             }
             val tvText = TextView(context)
             tvText.text = message
-            context?.let { tvText.setTextColor(ContextCompat.getColor(it, android.R.color.black)) }
+            tvText.setTextColor(ContextCompat.getColor(context, android.R.color.black))
             tvText.textSize = 20.toFloat()
             tvText.layoutParams = llParam
 
             ll.addView(progressBar)
             ll.addView(tvText)
 
-            val builder = context?.let { AlertDialog.Builder(it) }?.apply {
+            val builder = AlertDialog.Builder(context).apply {
                 setCancelable(false)
                 setView(ll)
             }
 
-            val dialog = builder?.create()
-            val window = dialog?.window
+            val dialog = builder.create()
+            val window = dialog.window
             if (window != null) {
                 val layoutParams = WindowManager.LayoutParams()
                 layoutParams.copyFrom(dialog.window?.attributes)

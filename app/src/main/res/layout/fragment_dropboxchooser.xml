@@ -89,6 +89,7 @@
                 android:id="@+id/btn_submit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:enabled="false"
                 android:paddingTop="20dp"
                 android:paddingBottom="20dp"
                 android:text="@string/common_ok"

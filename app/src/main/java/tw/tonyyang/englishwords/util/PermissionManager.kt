@@ -7,7 +7,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.ActivityCompat
-import tw.tonyyang.englishwords.FileChooserFragment
+import tw.tonyyang.englishwords.chooser.FileChooserFragment
 import tw.tonyyang.englishwords.RequestCodeStore
 import tw.tonyyang.englishwords.preference.GlobalPreference
 

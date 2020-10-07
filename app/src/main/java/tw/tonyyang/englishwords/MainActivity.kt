@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
+import tw.tonyyang.englishwords.chooser.FileChooserFragment
 
 class MainActivity : BaseActivity() {
 
